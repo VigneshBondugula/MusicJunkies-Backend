@@ -1,6 +1,8 @@
 ---
 - name: "Deploying backend service"
   hosts: all
+  connection: local
+  remote_user: vikky
   tasks:
     - name: Start docker service
       service:
