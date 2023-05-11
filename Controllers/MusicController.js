@@ -1,7 +1,7 @@
 import {MusicData} from "../Data/Music.js"
 import Music from "../Models/MusicModel.js"
 import asyncHandler from "express-async-handler"
-
+import User from "../Models/UserModel.js"
 //PUBLIC
 //@desc import music
 //@route POST /api/music/import
@@ -23,28 +23,28 @@ const importMusic = asyncHandler(async (req, res) =>
 const getMusic =  asyncHandler(async (req, res) => 
 {
     try {
-        const {artist, genre, language, year, search } = req.query;
+        const {rating, genre, language, year, search } = req.query;
         let query = {
-            ...(artist && {artist}),
+            ...(rating && {rating}),
             ...(genre && {genre}),
             ...(language && {language}),
             ...(year && {year}),
             ...(search && {title : {$regex: search, $options:"i"}}),
         }
-        const page = Number(req.query.pageNumber) || 1;
-        const limit = 2;
-        const skip = (page-1)*limit;
+        // const page = Number(req.query.pageNumber) || 1;
+        // const limit = 2;
+        // const skip = (page-1)*limit;
 
         const music = await Music.find(query)
-                            .sort({createdAt : -1})
-                            .skip(skip)
-                            .limit(limit);
+                            .sort({createdAt : -1});
+                            // .skip(skip)
+                            // .limit(limit);
 
         const count = await Music.countDocuments(query);
         res.json({
             music, 
-            page,
-            pages : Math.ceil(count/limit),
+            // page,
+            // pages : Math.ceil(count/limit),
             totalMusic : count
         })
     } catch (error) {
@@ -54,12 +54,12 @@ const getMusic =  asyncHandler(async (req, res) =>
 
 
 //@desc get music
-//@route GET /api/music/:id
+//@route GET /api/music/song/:id
 //@access Public
 const getMusicbyId =  asyncHandler(async (req, res) => 
 {
     try {
-       const music = Music.findById(req.params.id);
+       const music = await Music.findById(req.params.id);
        if(music){
         res.json(music);
        }
@@ -78,35 +78,52 @@ const getMusicbyId =  asyncHandler(async (req, res) =>
 const getTopMusic =  asyncHandler(async (req, res) =>
 {
     try {
-        const music = await Music.find({}).sort({rating : -1}).limit(5);
+        const music = await Music.find({}).sort({rating : -1}).limit(7);
         res.json(music);
     } catch (error) {
         res.status(400).json({message: error.message})
     }
 });
 
+//@desc get random music
+//@route GET /api/music/random
+//@access Public
+const getRandomMusic = asyncHandler(async (req, res) =>
+{
+    try{
+        const count = await Music.countDocuments();
+        const random = Math.floor(Math.random() * count);
+        const music = await Music.find({}).skip(random);
+        res.json(music);
+    }
+    catch (error) {
+        res.status(400).json({message: error.message})
+    }
+}
+)
 
 //PRIVATE
 
 //@desc create music review
-//@route POST /api/music/:id/reviews
+//@route POST /api/music/review/:id
 //@access Private
 const createMusicReview =  asyncHandler(async (req, res) =>
 {
     try {
         const {rating, comment} = req.body;
         const music = await Music.findById(req.params.id);
+        const user = await User.findOne(req.user._id);
         if(music){
-            const alreadyReviewed = music.reviews.find(r => r.user.toString() === req.user._id.toString());
+            const alreadyReviewed = music.reviews.find(r => r.userId.toString() === req.user._id.toString());
             if(alreadyReviewed){
                 res.status(400);
                 throw new Error("Music already reviewed");
             }
             const review = {
-                userName: req.user.fullName,
+                userName: user.fullname,
                 rating: Number(rating),
                 comment,
-                user: req.user._id
+                userId: req.user._id
             }
             music.reviews.push(review);
             music.numberOfReviews = music.reviews.length;
@@ -207,4 +224,4 @@ const createMusic =  asyncHandler(async (req, res) =>
         res.status(400).json({message: error.message})
     }
 });
-export {importMusic, getMusic, getMusicbyId, getTopMusic, createMusicReview, deleteMusic, updateMusic, createMusic};
+export {importMusic, getMusic, getMusicbyId, getTopMusic, createMusicReview, deleteMusic, updateMusic, createMusic, getRandomMusic};

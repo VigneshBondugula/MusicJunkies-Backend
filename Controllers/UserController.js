@@ -2,6 +2,7 @@ import asynchandler from 'express-async-handler';
 import { generateToken } from '../middlewares/Auth.js';
 import User from '../Models/UserModel.js';
 import bcrypt from 'bcryptjs';
+import Music from "../Models/MusicModel.js"
 
 // @desc    Register user & get token
 // @route   POST /api/users/register
@@ -158,7 +159,8 @@ const addUserFavorites = asynchandler(async (req, res) => {
                 res.status(400);
                 throw new Error("Music already added to favorites");
             }
-            user.likedMusic.push(musicId);
+            const music = await Music.findById(musicId);
+            user.likedMusic.push(music);
             await user.save();
             res.json(user.likedMusic);
         }
@@ -213,6 +215,8 @@ const deleteUserFavorites = asynchandler(async (req, res) => {
     }
 });
 
+
+
 //ADMIN ROUTES
 
 // @desc Get all users
@@ -240,4 +244,5 @@ const deleteUser = asynchandler(async (req, res) => {
         res.status(400).json({message : error.message});
     }
 });
+
 export {registerUser, loginUser, updateUserProfile, changePassword, addUserFavorites,getUserFavorites, getUsers, deleteUser, deleteUserFavorites};

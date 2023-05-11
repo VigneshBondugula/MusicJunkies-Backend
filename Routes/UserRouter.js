@@ -14,8 +14,8 @@ userRouter.put("/password", protect, changePassword);
 userRouter.get("/favorites", protect, getUserFavorites);
 userRouter.post("/favorites", protect, addUserFavorites);
 userRouter.delete("/favorites", protect, deleteUserFavorites);
+userRouter.delete("/:id", protect, deleteUser);
 
 //ADMIN ROUTES
 userRouter.get("/", protect, admin, getUsers);
-userRouter.delete("/:id", protect, admin, deleteUser);
 export default userRouter;
