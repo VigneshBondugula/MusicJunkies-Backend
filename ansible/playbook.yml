@@ -2,7 +2,6 @@
 - name: "Deploying backend service"
   hosts: all
   connection: local
-  remote_user: vikky
   tasks:
     - name: Start docker service
       service:
@@ -13,6 +12,7 @@
       kubernetes.core.k8s:
         state: absent
         definition: "{{ lookup('file', '../k8s/backend-deployement-service.yaml')}}"
+        validate_certs: no
 
     - name: "Create a k8s namespace"
       kubernetes.core.k8s:
