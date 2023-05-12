@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: musicjunkies-backend-depl
-  namespace: test
+  namespace: default
 spec:
   replicas: 1
   selector: 
@@ -19,12 +19,19 @@ spec:
           image: vigneshbondugula/mj-backend:latest
           ports:
             - containerPort: 8000
+          volumeMounts:
+            - name: data
+              mountPath: /logs
+      volumes:
+      - name: data
+        hostPath:
+          path: /home/vikky/logs
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: musicjunkies-backend-svc
-  namespace: test
+  namespace: default
 spec:
   type: ClusterIP
   selector:

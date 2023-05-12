@@ -1,7 +1,0 @@
-2023-05-12T06:51:48.512Z POST /api/users null 201
-2023-05-12T07:11:42.482Z POST /api/users/login null 200
-2023-05-12T07:11:49.255Z PUT /api/users/ 645936e0d49f8de600ca734d 200
-2023-05-12T07:11:55.511Z GET /api/music/top null 200
-2023-05-12T07:11:59.090Z GET /api/music/random null 200
-2023-05-12T07:12:01.554Z GET /api/music?genre=Pop&language=&rating=&year= null 200
-2023-05-12T07:12:06.425Z GET /api/music/song/6459f15e4cfe007a5d8fa72d null 200

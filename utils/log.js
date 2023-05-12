@@ -51,7 +51,7 @@ function logtofile(text, file = 'default.log', delimiter = '\n') {
 }
 
 const flog = (str) => {
-	logtofile(str, process.env.LOG_FILE_NAME || "backend.log");
+	logtofile(str, process.env.LOG_FILE_NAME || "logs/backend.log");
 };
 
 export default flog;
