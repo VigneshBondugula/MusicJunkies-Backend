@@ -2,18 +2,25 @@ import {MusicData} from "../Data/Music.js"
 import Music from "../Models/MusicModel.js"
 import asyncHandler from "express-async-handler"
 import User from "../Models/UserModel.js"
+import flog from "../utils/log.js"
+
 //PUBLIC
 //@desc import music
 //@route POST /api/music/import
 //@access Public
 const importMusic = asyncHandler(async (req, res) => 
 {
+    var id = null;
+    if (req.user != undefined) id = req.user.id;
+    var logText = req.method + " " + req.originalUrl + " " + id + " ";
     try{
         await Music.deleteMany({});
         const music = await Music.insertMany(MusicData);
         res.status(201).json(music);
+        flog(logText + "201");
     } catch (error) {
     res.status(400).json({message: error.message})
+    flog(logText + "400");
     }
 });
 
@@ -22,6 +29,9 @@ const importMusic = asyncHandler(async (req, res) =>
 //@access Public
 const getMusic =  asyncHandler(async (req, res) => 
 {
+    var id = null;
+    if (req.user != undefined) id = req.user.id;
+    var logText = req.method + " " + req.originalUrl + " " + id + " ";
     try {
         const {rating, genre, language, year, search } = req.query;
         let query = {
@@ -47,8 +57,10 @@ const getMusic =  asyncHandler(async (req, res) =>
             // pages : Math.ceil(count/limit),
             totalMusic : count
         })
+        flog(logText + "200");
     } catch (error) {
         res.status(400).json({message: error.message})
+        flog(logText + "400");
     }
 });
 
@@ -58,17 +70,23 @@ const getMusic =  asyncHandler(async (req, res) =>
 //@access Public
 const getMusicbyId =  asyncHandler(async (req, res) => 
 {
+    var id = null;
+    if (req.user != undefined) id = req.user.id;
+    var logText = req.method + " " + req.originalUrl + " " + id + " ";
     try {
        const music = await Music.findById(req.params.id);
        if(music){
         res.json(music);
+        flog(logText + "200");
        }
        else{
         res.status(404);
+        flog(logText + "404");
         throw new Error("Music not found");
        }
     } catch (error) {
         res.status(400).json({message: error.message})
+        flog(logText + "400");
     }
 });
 
@@ -77,11 +95,16 @@ const getMusicbyId =  asyncHandler(async (req, res) =>
 //@access Public
 const getTopMusic =  asyncHandler(async (req, res) =>
 {
+    var id = null;
+    if (req.user != undefined) id = req.user.id;
+    var logText = req.method + " " + req.originalUrl + " " + id + " ";
     try {
         const music = await Music.find({}).sort({rating : -1}).limit(7);
         res.json(music);
+        flog(logText + "200");
     } catch (error) {
         res.status(400).json({message: error.message})
+        flog(logText + "400");
     }
 });
 
@@ -90,14 +113,19 @@ const getTopMusic =  asyncHandler(async (req, res) =>
 //@access Public
 const getRandomMusic = asyncHandler(async (req, res) =>
 {
+    var id = null;
+    if (req.user != undefined) id = req.user.id;
+    var logText = req.method + " " + req.originalUrl + " " + id + " ";
     try{
         const count = await Music.countDocuments();
         const random = Math.floor(Math.random() * count);
         const music = await Music.find({}).skip(random);
         res.json(music);
+        flog(logText + "200");
     }
     catch (error) {
         res.status(400).json({message: error.message})
+        flog(logText + "400");
     }
 }
 )
@@ -109,6 +137,9 @@ const getRandomMusic = asyncHandler(async (req, res) =>
 //@access Private
 const createMusicReview =  asyncHandler(async (req, res) =>
 {
+    var id = null;
+    if (req.user != undefined) id = req.user.id;
+    var logText = req.method + " " + req.originalUrl + " " + id + " ";
     try {
         const {rating, comment} = req.body;
         const music = await Music.findById(req.params.id);
@@ -118,6 +149,7 @@ const createMusicReview =  asyncHandler(async (req, res) =>
             if(alreadyReviewed){
                 res.status(400);
                 throw new Error("Music already reviewed");
+                flog(logText + "400");
             }
             const review = {
                 userName: user.fullname,
@@ -130,13 +162,16 @@ const createMusicReview =  asyncHandler(async (req, res) =>
             music.rating = music.reviews.reduce((acc, item) => item.rating + acc, 0) / music.reviews.length;
             await music.save();
             res.status(201).json({message: "Review added"});
+            flog(logText + "201");
         }
         else{
             res.status(404);
             throw new Error("Music not found");
+            flog(logText + "404");
         }
     } catch (error) {
         res.status(400).json({message: error.message})
+        flog(logText + "400");
     }
 });
 
@@ -200,6 +235,9 @@ const updateMusic =  asyncHandler(async (req, res) =>
 //@access Private/Admin
 const createMusic =  asyncHandler(async (req, res) =>
 {
+    var id = null;
+    if (req.user != undefined) id = req.user.id;
+    var logText = req.method + " " + req.originalUrl + " " + id + " ";
     const {title, artist, genre, year, track, duration, path, cover, language, lyrics} = req.body;
     try {
         const music = new Music({
@@ -220,8 +258,10 @@ const createMusic =  asyncHandler(async (req, res) =>
         });
         const createdMusic = await music.save();
         res.status(201).json(createdMusic);
+        flog(logText + "201");
     } catch (error) {
         res.status(400).json({message: error.message})
+        flog(logText + "400");
     }
 });
 export {importMusic, getMusic, getMusicbyId, getTopMusic, createMusicReview, deleteMusic, updateMusic, createMusic, getRandomMusic};
