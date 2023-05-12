@@ -13,11 +13,6 @@
         state: absent
         definition: "{{ lookup('file', '../k8s/backend-deployement-service.yaml')}}"
 
-    # - name: "Create a k8s namespace"
-    #   kubernetes.core.k8s:
-    #     state: present
-    #     definition: "{{ lookup('file', '../k8s/namespace.yaml')}}"
-
     - name: "Create a backend deployement"
       kubernetes.core.k8s:
         state: present

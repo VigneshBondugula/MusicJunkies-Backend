@@ -21,11 +21,11 @@ spec:
             - containerPort: 8000
           volumeMounts:
             - name: data
-              mountPath: /logs
+              mountPath: /app/logs/
       volumes:
       - name: data
         hostPath:
-          path: /home/vikky/logs
+          path: /home/docker/logs
 ---
 apiVersion: v1
 kind: Service
