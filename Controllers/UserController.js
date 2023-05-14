@@ -67,6 +67,7 @@ const loginUser = asynchandler(async (req, res) => {
 
         if (user && (await bcrypt.compare(password, user.password))) {
             flog(logText + "200");
+            res.status(200);
             res.json({
                 _id: user._id,
                 fullname: user.fullname,
@@ -272,6 +273,7 @@ const getUsers = asynchandler(async (req, res) => {
     try {
         const users = await User.find({});
         res.json(users);
+        res.status(200);
         flog(logText + "200");
     }
     catch (error) {

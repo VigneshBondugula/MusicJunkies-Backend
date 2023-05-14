@@ -5,8 +5,8 @@ import { connectDB } from "./config/db.js";
 import userRouter from "./Routes/UserRouter.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import musicRouter from "./Routes/MusicRouter.js";
-
-const app = express();
+import mongoose from "mongoose";
+export const app = express();
 dotenv.config();
 const port = process.env.PORT || 3000;
 
@@ -26,10 +26,16 @@ app.use(express.json());
 
 // get driver connection
 
-connectDB();
-app.listen(port, () => {
-    console.log(`Server is running on port: ${port}`);
-});
+// connectDB();
+
+// await db connection
+await mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() =>
+    app.listen(port, () => console.log(`Server running on port: ${port}`))
+  )
+  .catch((error) => console.log(error));
+
 
 app.get('/', (req, res) => {
     res.send('API is running');
