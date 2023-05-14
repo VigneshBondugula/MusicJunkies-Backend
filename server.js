@@ -26,8 +26,6 @@ app.use(express.json());
 
 // get driver connection
 
-// connectDB();
-
 // await db connection
 await mongoose
   .connect(process.env.MONGO_URI)
