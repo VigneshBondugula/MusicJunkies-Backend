@@ -4,7 +4,7 @@ metadata:
   name: musicjunkies-backend-depl
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1
   selector: 
     matchLabels:
       app: musicjunkies-backend
